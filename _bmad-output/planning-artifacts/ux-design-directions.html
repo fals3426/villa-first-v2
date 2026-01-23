@@ -1,0 +1,1077 @@
+<!doctype html><html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Villa First — UX Design Directions (Step 9)</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: rgba(255, 255, 255, 0.06);
+        --stroke: rgba(255, 255, 255, 0.10);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.70);
+        --muted2: rgba(255, 255, 255, 0.55);
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        --radius: 18px;
+        --r2: 14px;
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 24px;
+        --space-6: 32px;
+        --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        background: radial-gradient(1200px 800px at 20% -10%, rgba(87, 189, 146, 0.14), transparent 60%),
+                    radial-gradient(900px 600px at 120% 20%, rgba(107, 162, 255, 0.14), transparent 55%),
+                    radial-gradient(800px 600px at 80% 110%, rgba(255, 136, 136, 0.10), transparent 60%),
+                    var(--bg);
+        color: var(--text);
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(12px);
+        background: rgba(11, 18, 32, 0.72);
+        border-bottom: 1px solid var(--stroke);
+      }
+
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--space-5);
+      }
+
+      .topbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .title {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+      }
+
+      .title h1 {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: 0.2px;
+      }
+
+      .title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .controls {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      select, button {
+        appearance: none;
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      button:hover { background: rgba(255, 255, 255, 0.09); }
+      button:active { transform: translateY(1px); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: var(--space-4);
+        padding-top: var(--space-5);
+      }
+
+      .card {
+        grid-column: span 12;
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      @media (min-width: 900px) {
+        .card { grid-column: span 6; }
+      }
+
+      .cardHeader {
+        padding: var(--space-4);
+        display: flex;
+        justify-content: space-between;
+        gap: var(--space-3);
+        align-items: flex-start;
+        border-bottom: 1px solid var(--stroke);
+      }
+
+      .cardHeader h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.2px;
+      }
+
+      .cardHeader .meta {
+        margin: 6px 0 0 0;
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.16);
+        color: rgba(255,255,255,0.92);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      /* ----- Mock phone ----- */
+      .phone {
+        margin: var(--space-4);
+        border-radius: 28px;
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(0,0,0,0.18);
+        padding: 12px;
+      }
+
+      .screen {
+        border-radius: 22px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: var(--screen-bg, #0f172a);
+        color: var(--screen-text, rgba(255,255,255,0.92));
+        min-height: 720px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .appbar {
+        padding: 14px 14px 10px 14px;
+        border-bottom: 1px solid var(--screen-stroke, rgba(255,255,255,0.08));
+        background: var(--appbar-bg, rgba(255,255,255,0.03));
+      }
+
+      .brandRow {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--primary, #57bd92), rgba(255,255,255,0.15));
+        box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+      }
+
+      .brandName { font-weight: 650; font-size: 13px; }
+      .brandSub { font-size: 12px; color: var(--screen-muted, rgba(255,255,255,0.70)); margin-top: 2px; }
+
+      .iconBtn {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: var(--chip-bg, rgba(255,255,255,0.06));
+        border: 1px solid var(--screen-stroke, rgba(255,255,255,0.10));
+        display: grid;
+        place-items: center;
+        color: var(--screen-text);
+        font-size: 14px;
+      }
+
+      .filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-top: 12px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--screen-stroke, rgba(255,255,255,0.10));
+        background: var(--chip-bg, rgba(255,255,255,0.05));
+        font-size: 12px;
+        color: var(--screen-text);
+      }
+
+      .chip strong { font-weight: 650; }
+      .chip .muted { color: var(--screen-muted, rgba(255,255,255,0.70)); font-weight: 500; }
+
+      .content {
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .listing {
+        border-radius: 18px;
+        border: 1px solid var(--screen-stroke, rgba(255,255,255,0.10));
+        background: var(--card-bg, rgba(255,255,255,0.04));
+        overflow: hidden;
+      }
+
+      .photo {
+        height: 150px;
+        background:
+          radial-gradient(600px 200px at 20% 10%, rgba(255,255,255,0.12), transparent 60%),
+          linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.15)),
+          linear-gradient(0deg, rgba(0,0,0,0.22), rgba(0,0,0,0.22));
+        position: relative;
+      }
+
+      .badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 650;
+        letter-spacing: 0.2px;
+        color: #0b1220;
+        background: var(--success, #57bd92);
+      }
+
+      .badge.secondary {
+        background: rgba(255,255,255,0.86);
+        color: #0b1220;
+      }
+
+      .badge.neutral {
+        background: rgba(255,255,255,0.12);
+        color: rgba(255,255,255,0.90);
+        border: 1px solid var(--screen-stroke, rgba(255,255,255,0.18));
+        font-weight: 600;
+      }
+
+      .like {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        background: rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.18);
+        display: grid;
+        place-items: center;
+        color: rgba(255,255,255,0.92);
+      }
+
+      .info {
+        padding: 12px 12px 12px 12px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+      }
+
+      .titleRow {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .listingTitle {
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.2px;
+      }
+
+      .price {
+        font-weight: 800;
+        font-size: 14px;
+      }
+
+      .sub {
+        font-size: 12px;
+        color: var(--screen-muted, rgba(255,255,255,0.70));
+      }
+
+      .vibes {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--screen-stroke, rgba(255,255,255,0.12));
+        background: var(--chip-bg, rgba(255,255,255,0.05));
+        font-size: 12px;
+      }
+
+      .tag .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--dot, rgba(255,255,255,0.65));
+      }
+
+      .tag[data-v="calme"] .dot { background: var(--v-calm, #6BA2FF); }
+      .tag[data-v="social"] .dot { background: var(--v-social, #FF886B); }
+      .tag[data-v="spirit"] .dot { background: var(--v-spirit, #B68CFF); }
+      .tag[data-v="work"] .dot { background: var(--v-work, #4FD4C8); }
+
+      .ctaRow {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 12px 12px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 700;
+        border: 1px solid var(--screen-stroke, rgba(255,255,255,0.12));
+        background: rgba(255,255,255,0.06);
+        color: var(--screen-text);
+      }
+
+      .btn.primary {
+        background: linear-gradient(135deg, var(--primary, #57bd92), rgba(255,255,255,0.12));
+        color: #0b1220;
+        border-color: rgba(0,0,0,0.08);
+      }
+
+      .foot {
+        margin-top: auto;
+        padding: 12px 14px;
+        border-top: 1px solid var(--screen-stroke, rgba(255,255,255,0.08));
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        background: var(--appbar-bg, rgba(255,255,255,0.03));
+        color: var(--screen-muted, rgba(255,255,255,0.70));
+        font-size: 12px;
+      }
+
+      /* ----- Variations ----- */
+      .dir[data-dir="1"] .screen {
+        --screen-bg: #0f172a;
+        --appbar-bg: rgba(255,255,255,0.03);
+        --screen-stroke: rgba(255,255,255,0.10);
+        --chip-bg: rgba(255,255,255,0.05);
+        --card-bg: rgba(255,255,255,0.04);
+        --primary: #57bd92;
+        --success: #57bd92;
+        --v-calm: #6BA2FF;
+        --v-social: #FF886B;
+        --v-spirit: #B68CFF;
+        --v-work: #4FD4C8;
+      }
+
+      /* Direction 2: Clean light, calm & airy */
+      .dir[data-dir="2"] .screen {
+        --screen-bg: #f7faf9;
+        --screen-text: rgba(10, 18, 28, 0.92);
+        --screen-muted: rgba(10, 18, 28, 0.60);
+        --appbar-bg: rgba(10, 18, 28, 0.02);
+        --screen-stroke: rgba(10, 18, 28, 0.12);
+        --chip-bg: rgba(10, 18, 28, 0.04);
+        --card-bg: rgba(10, 18, 28, 0.03);
+        --primary: #2fb879;
+        --success: #2fb879;
+        --v-calm: #4f86ff;
+        --v-social: #ff7a59;
+        --v-spirit: #a067ff;
+        --v-work: #19b6a7;
+      }
+      .dir[data-dir="2"] .badge.neutral { color: rgba(10,18,28,0.86); }
+      .dir[data-dir="2"] .like { background: rgba(10,18,28,0.08); color: rgba(10,18,28,0.8); }
+      .dir[data-dir="2"] .btn { background: rgba(10,18,28,0.04); }
+      .dir[data-dir="2"] .btn.primary { color: #ffffff; background: linear-gradient(135deg, var(--primary), rgba(10,18,28,0.06)); border-color: rgba(0,0,0,0.08); }
+
+      /* Direction 3: Trust-heavy, badge-first, high contrast */
+      .dir[data-dir="3"] .screen {
+        --screen-bg: #0b1220;
+        --appbar-bg: rgba(255,255,255,0.02);
+        --screen-stroke: rgba(255,255,255,0.14);
+        --chip-bg: rgba(255,255,255,0.06);
+        --card-bg: rgba(255,255,255,0.05);
+        --primary: #57bd92;
+        --success: #57bd92;
+        --v-calm: #6BA2FF;
+        --v-social: #FF886B;
+        --v-spirit: #B68CFF;
+        --v-work: #4FD4C8;
+      }
+      .dir[data-dir="3"] .badge { transform: scale(1.02); box-shadow: 0 8px 20px rgba(87,189,146,0.30); }
+      .dir[data-dir="3"] .listingTitle { font-size: 15px; }
+      .dir[data-dir="3"] .price { font-size: 15px; }
+
+      /* Direction 4: Editorial, text-forward, ultra readable */
+      .dir[data-dir="4"] .screen {
+        --screen-bg: #fcfbf8;
+        --screen-text: rgba(20, 26, 34, 0.94);
+        --screen-muted: rgba(20, 26, 34, 0.62);
+        --appbar-bg: rgba(20, 26, 34, 0.02);
+        --screen-stroke: rgba(20, 26, 34, 0.12);
+        --chip-bg: rgba(20, 26, 34, 0.04);
+        --card-bg: rgba(20, 26, 34, 0.03);
+        --primary: #1fb07b;
+        --success: #1fb07b;
+        --v-calm: #2b6cff;
+        --v-social: #ff6b57;
+        --v-spirit: #8d5bff;
+        --v-work: #15a5a0;
+      }
+      .dir[data-dir="4"] .photo { height: 120px; }
+      .dir[data-dir="4"] .listingTitle { font-size: 15px; }
+      .dir[data-dir="4"] .info { gap: 12px; }
+
+      /* Direction 5: Compact, efficient, “power filters” */
+      .dir[data-dir="5"] .screen {
+        --screen-bg: #0f172a;
+        --appbar-bg: rgba(255,255,255,0.03);
+        --screen-stroke: rgba(255,255,255,0.12);
+        --chip-bg: rgba(255,255,255,0.05);
+        --card-bg: rgba(255,255,255,0.04);
+        --primary: #57bd92;
+        --success: #57bd92;
+        --v-calm: #6BA2FF;
+        --v-social: #FF886B;
+        --v-spirit: #B68CFF;
+        --v-work: #4FD4C8;
+      }
+      .dir[data-dir="5"] .content { gap: 10px; padding: 12px; }
+      .dir[data-dir="5"] .listing { border-radius: 14px; }
+      .dir[data-dir="5"] .photo { height: 120px; }
+      .dir[data-dir="5"] .chip { padding: 7px 9px; font-size: 11px; }
+      .dir[data-dir="5"] .tag { padding: 6px 9px; font-size: 11px; }
+
+      /* Direction 6: “Human warmth” (calm + friendly) */
+      .dir[data-dir="6"] .screen {
+        --screen-bg: #fff7f3;
+        --screen-text: rgba(22, 26, 30, 0.92);
+        --screen-muted: rgba(22, 26, 30, 0.62);
+        --appbar-bg: rgba(22, 26, 30, 0.02);
+        --screen-stroke: rgba(22, 26, 30, 0.10);
+        --chip-bg: rgba(22, 26, 30, 0.04);
+        --card-bg: rgba(22, 26, 30, 0.03);
+        --primary: #1fb07b;
+        --success: #1fb07b;
+        --v-calm: #4f86ff;
+        --v-social: #ff7a59;
+        --v-spirit: #a067ff;
+        --v-work: #19b6a7;
+      }
+      .dir[data-dir="6"] .logo { border-radius: 14px; }
+      .dir[data-dir="6"] .badge { color: #062114; }
+      .dir[data-dir="6"] .btn.primary { color: #ffffff; background: linear-gradient(135deg, var(--primary), rgba(22,26,30,0.06)); }
+
+      /* Small helper */
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 12px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        border: 1px solid var(--stroke);
+        background: rgba(255,255,255,0.06);
+        color: var(--text);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <div class="topbar">
+          <div class="title">
+            <h1>Villa First — Design Directions (Step 9)</h1>
+            <p>6 directions visuelles — mobile-first, confiance visible, vibes lisibles.</p>
+          </div>
+          <div class="controls">
+            <label class="pill" title="Choisir une direction pour l'aperçu plein écran">
+              Direction&nbsp;
+              <select id="dirSelect" aria-label="Choisir une direction">
+                <option value="1">1 — Balanced Trust (dark)</option>
+                <option value="2">2 — Clean Calm (light)</option>
+                <option value="3">3 — Badge-First (trust-heavy)</option>
+                <option value="4">4 — Editorial Readability</option>
+                <option value="5">5 — Compact & Efficient</option>
+                <option value="6">6 — Warm & Human</option>
+              </select>
+            </label>
+            <button id="focusBtn" type="button">Aperçu plein écran</button>
+            <button id="resetBtn" type="button">Vue grille</button>
+          </div>
+        </div>
+        <p style="margin: 14px 0 0 0; color: var(--muted2); font-size: 12px; line-height: 1.5;">
+          Astuce : commence par la direction qui te fait sentir <strong>rassuré</strong> en 2 secondes.
+          Puis vérifie : badge vérifié ultra visible, vibes lisibles, hiérarchie <em>confiance → vibes → prix</em>.
+          <span class="kbd">1–6</span> pour changer rapidement.
+        </p>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div id="grid" class="grid">
+        <!-- Direction cards -->
+        <section class="card dir" data-dir="1">
+          <div class="cardHeader">
+            <div>
+              <h2>Direction 1 — Balanced Trust (dark)</h2>
+              <p class="meta">Équilibre calme + confiance. Bon “default” MVP.</p>
+            </div>
+            <span class="pill">Confiance visible • Airy</span>
+          </div>
+          <div class="phone"><div class="screen">
+            <div class="appbar">
+              <div class="brandRow">
+                <div class="brand">
+                  <div class="logo"></div>
+                  <div>
+                    <div class="brandName">Villa First</div>
+                    <div class="brandSub">Trouve ta coloc vérifiée</div>
+                  </div>
+                </div>
+                <div class="iconBtn" aria-hidden="true">☰</div>
+              </div>
+              <div class="filters">
+                <div class="chip"><strong>Vibes</strong> <span class="muted">Calme · 💻</span></div>
+                <div class="chip"><strong>Budget</strong> <span class="muted">≤ 700€</span></div>
+                <div class="chip"><strong>Zone</strong> <span class="muted">Canggu</span></div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge">✓ Vérifié</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Coloc calme • proche plage</div>
+                    <div class="price">680€</div>
+                  </div>
+                  <div class="sub">Canggu • 1 chambre • dispo 12 fév</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="calme"><span class="dot"></span>Calme</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>Télétravail</div>
+                    <div class="tag" data-v="spirit"><span class="dot"></span>Yoga</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Voir détails</button>
+                    <button class="btn primary">Réserver</button>
+                  </div>
+                </div>
+              </div>
+              <div class="listing" style="opacity:0.92">
+                <div class="photo">
+                  <div class="badge neutral">Non vérifié</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Villa partagée • social</div>
+                    <div class="price">620€</div>
+                  </div>
+                  <div class="sub">Berawa • 1 chambre • dispo 20 fév</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="social"><span class="dot"></span>Social</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>💻</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Voir détails</button>
+                    <button class="btn">Réserver</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <div>🏠 Explorer</div>
+              <div>☆ Favoris</div>
+              <div>👤 Profil</div>
+            </div>
+          </div></div>
+        </section>
+
+        <section class="card dir" data-dir="2">
+          <div class="cardHeader">
+            <div>
+              <h2>Direction 2 — Clean Calm (light)</h2>
+              <p class="meta">Très rassurant, “airbnb-like” mais plus vibes-first.</p>
+            </div>
+            <span class="pill">Calme • Clair • Light</span>
+          </div>
+          <div class="phone"><div class="screen">
+            <div class="appbar">
+              <div class="brandRow">
+                <div class="brand">
+                  <div class="logo"></div>
+                  <div>
+                    <div class="brandName">Villa First</div>
+                    <div class="brandSub">Annonces vérifiées à Bali</div>
+                  </div>
+                </div>
+                <div class="iconBtn" aria-hidden="true">☰</div>
+              </div>
+              <div class="filters">
+                <div class="chip"><strong>Vibes</strong> <span class="muted">🌙 · 🧘</span></div>
+                <div class="chip"><strong>Budget</strong> <span class="muted">≤ 700€</span></div>
+                <div class="chip"><strong>Zone</strong> <span class="muted">Canggu</span></div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge">✓ Vérifié</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Coloc sereine • cowork nearby</div>
+                    <div class="price">690€</div>
+                  </div>
+                  <div class="sub">Canggu • 1 chambre • règles claires</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="calme"><span class="dot"></span>Calme</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>💻</div>
+                    <div class="tag" data-v="spirit"><span class="dot"></span>🧘</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Détails</button>
+                    <button class="btn primary">Réserver</button>
+                  </div>
+                </div>
+              </div>
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge secondary">ID vérifiée</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Villa lumineuse • chill</div>
+                    <div class="price">640€</div>
+                  </div>
+                  <div class="sub">Berawa • 1 chambre • calme</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="calme"><span class="dot"></span>🌙</div>
+                    <div class="tag" data-v="social"><span class="dot"></span>🎉</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Détails</button>
+                    <button class="btn">Réserver</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <div>🏠 Explorer</div>
+              <div>☆ Favoris</div>
+              <div>👤 Profil</div>
+            </div>
+          </div></div>
+        </section>
+
+        <section class="card dir" data-dir="3">
+          <div class="cardHeader">
+            <div>
+              <h2>Direction 3 — Badge-First (trust-heavy)</h2>
+              <p class="meta">La confiance “crie” sans anxiété. Très bon si risque perçu élevé.</p>
+            </div>
+            <span class="pill">Badge dominant • High trust</span>
+          </div>
+          <div class="phone"><div class="screen">
+            <div class="appbar">
+              <div class="brandRow">
+                <div class="brand">
+                  <div class="logo"></div>
+                  <div>
+                    <div class="brandName">Villa First</div>
+                    <div class="brandSub">Vérifié = sécurisé</div>
+                  </div>
+                </div>
+                <div class="iconBtn" aria-hidden="true">🔍</div>
+              </div>
+              <div class="filters">
+                <div class="chip"><strong>Vibes</strong> <span class="muted">Calme</span></div>
+                <div class="chip"><strong>Budget</strong> <span class="muted">≤ 700€</span></div>
+                <div class="chip"><strong>Zone</strong> <span class="muted">Canggu</span></div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge">✓ Annonce vérifiée</div>
+                  <div class="like">★</div>
+                </div>
+                <div class="info">
+                  <div class="row">
+                    <div class="sub">ID + titre + mandat + règles</div>
+                    <div class="pill" style="border-color: rgba(87,189,146,0.35); background: rgba(87,189,146,0.18); color: rgba(255,255,255,0.92)">Détails vérif</div>
+                  </div>
+                  <div class="titleRow">
+                    <div class="listingTitle">Coloc calme • 100% vérifiée</div>
+                    <div class="price">680€</div>
+                  </div>
+                  <div class="vibes">
+                    <div class="tag" data-v="calme"><span class="dot"></span>🌙 Calme</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>💻 Remote</div>
+                    <div class="tag" data-v="spirit"><span class="dot"></span>🧘</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Voir détails</button>
+                    <button class="btn primary">Réserver</button>
+                  </div>
+                </div>
+              </div>
+              <div class="listing" style="opacity:0.90">
+                <div class="photo">
+                  <div class="badge neutral">Non vérifié</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Coloc • vibes social</div>
+                    <div class="price">610€</div>
+                  </div>
+                  <div class="sub">Berawa • badge indisponible</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="social"><span class="dot"></span>🎉</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>💻</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Voir détails</button>
+                    <button class="btn">Réserver</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <div>🏠 Explorer</div>
+              <div>✓ Vérifiés</div>
+              <div>👤 Profil</div>
+            </div>
+          </div></div>
+        </section>
+
+        <section class="card dir" data-dir="4">
+          <div class="cardHeader">
+            <div>
+              <h2>Direction 4 — Editorial Readability</h2>
+              <p class="meta">Très “lisibilité avant tout”. Bon si contenu règles/charte important.</p>
+            </div>
+            <span class="pill">Text-forward • Ultra clair</span>
+          </div>
+          <div class="phone"><div class="screen">
+            <div class="appbar">
+              <div class="brandRow">
+                <div class="brand">
+                  <div class="logo"></div>
+                  <div>
+                    <div class="brandName">Villa First</div>
+                    <div class="brandSub">Lisibilité avant tout</div>
+                  </div>
+                </div>
+                <div class="iconBtn" aria-hidden="true">☰</div>
+              </div>
+              <div class="filters">
+                <div class="chip"><strong>Vibes</strong> <span class="muted">🌙 · 💻</span></div>
+                <div class="chip"><strong>Budget</strong> <span class="muted">≤ 700€</span></div>
+                <div class="chip"><strong>Zone</strong> <span class="muted">Canggu</span></div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge">✓ Vérifié</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Coloc calme (règles claires)</div>
+                    <div class="price">680€</div>
+                  </div>
+                  <div class="sub">Canggu • check-in simple • charte signée</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="calme"><span class="dot"></span>Calme</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>Télétravail</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Règles</button>
+                    <button class="btn primary">Détails</button>
+                  </div>
+                </div>
+              </div>
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge secondary">ID vérifiée</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Villa partagée (social)</div>
+                    <div class="price">620€</div>
+                  </div>
+                  <div class="sub">Berawa • règles visibles</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="social"><span class="dot"></span>Social</div>
+                    <div class="tag" data-v="spirit"><span class="dot"></span>Yoga</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Règles</button>
+                    <button class="btn">Détails</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <div>🏠 Explorer</div>
+              <div>📄 Règles</div>
+              <div>👤 Profil</div>
+            </div>
+          </div></div>
+        </section>
+
+        <section class="card dir" data-dir="5">
+          <div class="cardHeader">
+            <div>
+              <h2>Direction 5 — Compact & Efficient</h2>
+              <p class="meta">Densité plus forte (sans stress), pour “power users”.</p>
+            </div>
+            <span class="pill">Compact • Efficace</span>
+          </div>
+          <div class="phone"><div class="screen">
+            <div class="appbar">
+              <div class="brandRow">
+                <div class="brand">
+                  <div class="logo"></div>
+                  <div>
+                    <div class="brandName">Villa First</div>
+                    <div class="brandSub">Trouve vite, compare vite</div>
+                  </div>
+                </div>
+                <div class="iconBtn" aria-hidden="true">≡</div>
+              </div>
+              <div class="filters">
+                <div class="chip"><strong>Vibes</strong> <span class="muted">🌙</span></div>
+                <div class="chip"><strong>Budget</strong> <span class="muted">≤ 700€</span></div>
+                <div class="chip"><strong>Zone</strong> <span class="muted">Canggu</span></div>
+                <div class="chip"><strong>Trier</strong> <span class="muted">Vérifiés</span></div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge">✓ Vérifié</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Coloc calme • remote</div>
+                    <div class="price">675€</div>
+                  </div>
+                  <div class="vibes">
+                    <div class="tag" data-v="calme"><span class="dot"></span>🌙</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>💻</div>
+                    <div class="tag" data-v="spirit"><span class="dot"></span>🧘</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">+</button>
+                    <button class="btn primary">Voir</button>
+                  </div>
+                </div>
+              </div>
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge">✓ Vérifié</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Villa calme • règles claires</div>
+                    <div class="price">699€</div>
+                  </div>
+                  <div class="vibes">
+                    <div class="tag" data-v="calme"><span class="dot"></span>Calme</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>💻</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">+</button>
+                    <button class="btn primary">Voir</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <div>🏠</div>
+              <div>☆</div>
+              <div>👤</div>
+            </div>
+          </div></div>
+        </section>
+
+        <section class="card dir" data-dir="6">
+          <div class="cardHeader">
+            <div>
+              <h2>Direction 6 — Warm & Human</h2>
+              <p class="meta">Confiance + chaleur. Très “communauté” sans perdre la structure.</p>
+            </div>
+            <span class="pill">Chaleureux • Humain</span>
+          </div>
+          <div class="phone"><div class="screen">
+            <div class="appbar">
+              <div class="brandRow">
+                <div class="brand">
+                  <div class="logo"></div>
+                  <div>
+                    <div class="brandName">Villa First</div>
+                    <div class="brandSub">Trouve ta vibe, en sécurité</div>
+                  </div>
+                </div>
+                <div class="iconBtn" aria-hidden="true">☰</div>
+              </div>
+              <div class="filters">
+                <div class="chip"><strong>Vibes</strong> <span class="muted">🧘 · 💻</span></div>
+                <div class="chip"><strong>Budget</strong> <span class="muted">≤ 700€</span></div>
+                <div class="chip"><strong>Zone</strong> <span class="muted">Canggu</span></div>
+              </div>
+            </div>
+            <div class="content">
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge">✓ Vérifié</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Coloc yoga • calme • remote</div>
+                    <div class="price">690€</div>
+                  </div>
+                  <div class="sub">Canggu • vibes alignées</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="spirit"><span class="dot"></span>🧘 Spiritualité</div>
+                    <div class="tag" data-v="work"><span class="dot"></span>💻 Télétravail</div>
+                    <div class="tag" data-v="calme"><span class="dot"></span>🌙 Calme</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Détails</button>
+                    <button class="btn primary">Réserver</button>
+                  </div>
+                </div>
+              </div>
+              <div class="listing">
+                <div class="photo">
+                  <div class="badge secondary">ID vérifiée</div>
+                  <div class="like">♡</div>
+                </div>
+                <div class="info">
+                  <div class="titleRow">
+                    <div class="listingTitle">Coloc chill • social doux</div>
+                    <div class="price">635€</div>
+                  </div>
+                  <div class="sub">Berawa • règles visibles</div>
+                  <div class="vibes">
+                    <div class="tag" data-v="social"><span class="dot"></span>🎉 Social</div>
+                    <div class="tag" data-v="calme"><span class="dot"></span>🌙</div>
+                  </div>
+                  <div class="ctaRow">
+                    <button class="btn">Détails</button>
+                    <button class="btn">Réserver</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="foot">
+              <div>🏠 Explorer</div>
+              <div>☆ Favoris</div>
+              <div>👤 Profil</div>
+            </div>
+          </div></div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const select = document.getElementById('dirSelect');
+      const grid = document.getElementById('grid');
+      const focusBtn = document.getElementById('focusBtn');
+      const resetBtn = document.getElementById('resetBtn');
+
+      function setFocus(dir) {
+        const cards = [...grid.querySelectorAll('.dir')];
+        cards.forEach((c) => {
+          c.style.display = (c.dataset.dir === String(dir)) ? 'block' : 'none';
+          c.style.gridColumn = 'span 12';
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function setGrid() {
+        const cards = [...grid.querySelectorAll('.dir')];
+        cards.forEach((c) => {
+          c.style.display = 'block';
+          c.style.gridColumn = '';
+        });
+      }
+
+      focusBtn.addEventListener('click', () => setFocus(select.value));
+      resetBtn.addEventListener('click', () => setGrid());
+      select.addEventListener('change', () => {});
+
+      window.addEventListener('keydown', (e) => {
+        const n = Number(e.key);
+        if (n >= 1 && n <= 6) {
+          select.value = String(n);
+          setFocus(n);
+        }
+        if (e.key === 'Escape') setGrid();
+      });
+    </script>
+  </body>
+</html>

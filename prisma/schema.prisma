@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserType {
+  tenant
+  host
+}
+
+enum KycStatus {
+  pending
+  verified
+  rejected
+}
+
+model User {
+  id                  String           @id @default(cuid())
+  email               String           @unique
+  password            String
+  userType            UserType
+  firstName           String?
+  lastName            String?
+  phone               String?
+  profilePictureUrl    String?
+  vibesPreferences    Json?
+  onboardingCompleted Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  kycVerification     KycVerification?
+
+  @@map("users")
+}
+
+model KycVerification {
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documentUrl         String
+  status              KycStatus @default(pending)
+  provider            String    // 'stripe', 'onfido', 'sumsub', 'mock'
+  providerId          String?
+  
+  // Données vérifiées (chiffrées)
+  verifiedName        String?
+  verifiedDateOfBirth DateTime?
+  verifiedNationality String?
+  
+  // Gestion conservation (RGPD)
+  retentionUntil     DateTime? // Date de suppression automatique
+  
+  verifiedAt          DateTime?
+  rejectedAt          DateTime?
+  rejectionReason     String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("kyc_verifications")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String   // 'kyc_verified', 'kyc_rejected', 'kyc_deleted', etc.
+  entityType String   // 'kyc', 'user', etc.
+  entityId   String?
+  details    Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

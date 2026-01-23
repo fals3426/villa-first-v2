@@ -1,0 +1,22 @@
+# Workflow Status - Villa first v2
+# Generated: 2026-01-19
+# Project type: Plateforme de mise en relation
+# Track: bmad-method (greenfield)
+
+generated: "2026-01-19"
+project: "Villa first v2"
+project_type: "Plateforme de mise en relation"
+selected_track: "bmad-method"
+field_type: "greenfield"
+workflow_path: "c:\\Users\\Falsone\\Desktop\\Villa first v2\\_bmad\\bmm\\workflows\\workflow-status\\paths\\method-greenfield.yaml"
+workflow_status:
+  brainstorm-project: optional
+  research: optional
+  product-brief: optional
+  prd: "_bmad-output/planning-artifacts/prd.md"
+  create-ux-design: "_bmad-output/planning-artifacts/ux-design-specification.md"
+  create-architecture: "_bmad-output/planning-artifacts/architecture.md"
+  create-epics-and-stories: "_bmad-output/planning-artifacts/epics.md"
+  test-design: optional
+  implementation-readiness: "_bmad-output/planning-artifacts/implementation-readiness-report-2026-01-20.md"
+  sprint-planning: "_bmad-output/implementation-artifacts/sprint-status.yaml"
