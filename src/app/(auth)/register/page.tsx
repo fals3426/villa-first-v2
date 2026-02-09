@@ -18,7 +18,9 @@ export default function RegisterPage() {
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [userType, setUserType] = useState<'tenant' | 'host' | ''>('');
+  const [userType, setUserType] = useState<'tenant' | 'host' | 'support' | ''>('');
+  const isDev = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,14 +29,13 @@ export default function RegisterPage() {
 
     const formData = new FormData(e.currentTarget);
     
-    if (!userType || (userType !== 'tenant' && userType !== 'host')) {
+    if (!userType || !['tenant', 'host', 'support'].includes(userType)) {
       setErrors({ userType: 'Veuillez sélectionner un type d\'utilisateur' });
       setIsLoading(false);
       return;
     }
     
-    // Type guard pour TypeScript
-    const validatedUserType: 'tenant' | 'host' = userType === 'tenant' ? 'tenant' : 'host';
+    const validatedUserType = userType as 'tenant' | 'host' | 'support';
     
     const data: RegisterInput = {
       email: formData.get('email') as string,
@@ -78,8 +79,15 @@ export default function RegisterPage() {
             }
           });
           setErrors(fieldErrors);
+        } else if (result.error?.code === 'DATABASE_ERROR') {
+          setErrors({ 
+            general: result.error.message || 'Erreur de connexion à la base de données. Vérifiez que la base de données est démarrée.' 
+          });
         } else {
-          setErrors({ general: result.error?.message || 'Une erreur est survenue' });
+          setErrors({ 
+            general: result.error?.message || 'Une erreur est survenue lors de la création du compte',
+            ...(result.error?.details && { details: result.error.details })
+          });
         }
         setIsLoading(false);
         return;
@@ -88,24 +96,29 @@ export default function RegisterPage() {
       // Succès - rediriger vers login
       router.push('/login?registered=true');
     } catch (error) {
-      setErrors({ general: 'Une erreur est survenue' });
+      console.error('Registration fetch error:', error);
+      setErrors({ 
+        general: error instanceof Error 
+          ? `Erreur réseau: ${error.message}` 
+          : 'Une erreur est survenue lors de la connexion au serveur' 
+      });
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6 rounded-lg border p-6">
-        <div>
-          <h1 className="text-2xl font-bold">Créer un compte</h1>
-          <p className="text-muted-foreground mt-2">
-            Rejoignez Villa first pour trouver ou proposer une colocation
+    <div className="flex min-h-screen items-center justify-center bg-black p-4 safe-area-bottom">
+      <div className="w-full max-w-md space-y-6 rounded-2xl border border-white/10 bg-zinc-900 p-6 md:p-8">
+        <div className="text-center">
+          <h1 className="text-heading-2 mb-2">Créer un compte</h1>
+          <p className="text-white/90">
+            Rejoins Villa first pour trouver ou proposer une coloc
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {errors.general && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+            <div className="rounded-lg bg-red-500/20 border border-red-500/30 p-4 text-sm text-red-300">
               {errors.general}
             </div>
           )}
@@ -121,7 +134,7 @@ export default function RegisterPage() {
               aria-invalid={!!errors.email}
             />
             {errors.email && (
-              <p className="text-sm text-destructive">{errors.email}</p>
+              <p className="text-sm text-red-400">{errors.email}</p>
             )}
           </div>
 
@@ -136,7 +149,7 @@ export default function RegisterPage() {
               aria-invalid={!!errors.password}
             />
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password}</p>
+              <p className="text-sm text-red-400">{errors.password}</p>
             )}
           </div>
 
@@ -146,12 +159,12 @@ export default function RegisterPage() {
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              placeholder="Répétez votre mot de passe"
+              placeholder="Répète ton mot de passe"
               required
               aria-invalid={!!errors.confirmPassword}
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+              <p className="text-sm text-red-400">{errors.confirmPassword}</p>
             )}
           </div>
 
@@ -159,30 +172,33 @@ export default function RegisterPage() {
             <Label htmlFor="userType">Je suis</Label>
             <Select
               value={userType}
-              onValueChange={(value) => setUserType(value as 'tenant' | 'host')}
+              onValueChange={(value) => setUserType(value as 'tenant' | 'host' | 'support')}
               required
             >
-              <SelectTrigger id="userType" aria-invalid={!!errors.userType}>
-                <SelectValue placeholder="Sélectionnez votre profil" />
+              <SelectTrigger id="userType" aria-invalid={!!errors.userType} className="w-full">
+                <SelectValue placeholder="Sélectionne ton profil" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="tenant">Locataire</SelectItem>
                 <SelectItem value="host">Hôte / Propriétaire</SelectItem>
+                {isDev && (
+                  <SelectItem value="support">Admin / Support (dev uniquement)</SelectItem>
+                )}
               </SelectContent>
             </Select>
             {errors.userType && (
-              <p className="text-sm text-destructive">{errors.userType}</p>
+              <p className="text-sm text-red-400">{errors.userType}</p>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" variant="v1-primary" className="w-full" disabled={isLoading}>
             {isLoading ? 'Création en cours...' : 'Créer mon compte'}
           </Button>
         </form>
 
-        <div className="text-center text-sm text-muted-foreground">
+        <div className="text-center text-sm text-zinc-400">
           Déjà un compte ?{' '}
-          <a href="/login" className="text-primary hover:underline">
+          <a href="/login" className="text-white hover:underline font-medium">
             Se connecter
           </a>
         </div>

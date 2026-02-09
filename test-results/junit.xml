@@ -1,0 +1,34 @@
+<testsuites id="" name="" tests="12" failures="0" skipped="1" errors="0" time="18.700714">
+<testsuite name="nfr\security.spec.ts" timestamp="2026-01-28T12:26:25.188Z" hostname="chromium" tests="12" failures="0" skipped="1" time="86.153" errors="0">
+<testcase name="Security NFR: Authentication &amp; Authorization › unauthenticated users cannot access protected routes" classname="nfr\security.spec.ts" time="9.649">
+</testcase>
+<testcase name="Security NFR: Authentication &amp; Authorization › unauthenticated users cannot access host routes" classname="nfr\security.spec.ts" time="9.84">
+</testcase>
+<testcase name="Security NFR: Authentication &amp; Authorization › unauthenticated users cannot access protected API routes" classname="nfr\security.spec.ts" time="0.382">
+</testcase>
+<testcase name="Security NFR: Authentication &amp; Authorization › passwords are never logged or exposed in errors" classname="nfr\security.spec.ts" time="9.373">
+</testcase>
+<testcase name="Security NFR: Authentication &amp; Authorization › SQL injection attempts are blocked" classname="nfr\security.spec.ts" time="2.413">
+</testcase>
+<testcase name="Security NFR: Authentication &amp; Authorization › XSS attempts are sanitized" classname="nfr\security.spec.ts" time="10.967">
+</testcase>
+<testcase name="Security NFR: Authentication &amp; Authorization › authentication tokens expire after session timeout" classname="nfr\security.spec.ts" time="13.337">
+</testcase>
+<testcase name="Security NFR: Authorization (RBAC) › users cannot access admin routes without admin role" classname="nfr\security.spec.ts" time="9.523">
+</testcase>
+<testcase name="Security NFR: Authorization (RBAC) › host users cannot access tenant-only routes" classname="nfr\security.spec.ts" time="8.907">
+</testcase>
+<testcase name="Security NFR: Data Protection › sensitive data is not exposed in client-side code" classname="nfr\security.spec.ts" time="7.029">
+</testcase>
+<testcase name="Security NFR: Data Protection › HTTPS is enforced in production" classname="nfr\security.spec.ts" time="0.504">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Security NFR: Error Handling › error messages do not expose sensitive information" classname="nfr\security.spec.ts" time="4.229">
+</testcase>
+</testsuite>
+</testsuites>

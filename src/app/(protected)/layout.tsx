@@ -1,7 +1,8 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { LogoutButton } from '@/components/auth/LogoutButton';
+import { MainNavigation } from '@/components/navigation/MainNavigation';
+import { MobileBottomNavigation } from '@/components/navigation/MobileBottomNavigation';
 
 export default async function ProtectedLayout({
   children,
@@ -15,23 +16,12 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <div className="min-h-screen">
-      <nav className="border-b">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center space-x-4">
-            <a href="/dashboard" className="text-xl font-bold">
-              Villa first
-            </a>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">
-              {session.user.email}
-            </span>
-            <LogoutButton />
-          </div>
-        </div>
-      </nav>
-      <main>{children}</main>
+    <div className="min-h-screen bg-black">
+      <MainNavigation />
+      <main className="pb-16 md:pb-0">
+        {children}
+      </main>
+      <MobileBottomNavigation />
     </div>
   );
 }

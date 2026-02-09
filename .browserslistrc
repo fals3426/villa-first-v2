@@ -1,0 +1,16 @@
+# Configuration des navigateurs cibles pour réduire les polyfills legacy
+# Cible uniquement les navigateurs modernes qui supportent ES6+
+
+# Navigateurs modernes avec support ES6+
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
+
+# Support mobile moderne
+iOS >= 12
+Android >= 8
+
+# Exclure les navigateurs très anciens
+not IE 11
+not dead

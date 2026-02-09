@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { VibesQuestionnaire } from '@/components/features/onboarding/VibesQuestionnaire';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import type { VibesPreferences } from '@/types/vibes.types';
 
 export default function OnboardingPage() {
@@ -67,8 +68,8 @@ export default function OnboardingPage() {
 
   if (isLoading || status === 'loading') {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-muted-foreground">Chargement...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-zinc-400">Chargement...</div>
       </div>
     );
   }
@@ -78,19 +79,26 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">
-            Questionnaire de préférences
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Aidez-nous à vous proposer des colocations qui correspondent à vos
-            attentes. Sélectionnez toutes les options qui vous intéressent.
-          </p>
-        </div>
+    <div className="min-h-screen bg-black">
+      <div className="container mx-auto p-6 max-w-4xl">
+        <div className="space-y-8">
+          <div>
+            <p className="text-label mb-2">ONBOARDING</p>
+            <h1 className="text-heading-2 mb-2">
+              Questionnaire de préférences
+            </h1>
+            <p className="text-white/90">
+              Aide-nous à te proposer des colocs qui correspondent à tes
+              attentes. Sélectionne toutes les options qui t'intéressent.
+            </p>
+          </div>
 
-        <VibesQuestionnaire onSubmit={handleSubmit} />
+          <Card variant="v1-default">
+            <CardContent className="pt-6">
+              <VibesQuestionnaire onSubmit={handleSubmit} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

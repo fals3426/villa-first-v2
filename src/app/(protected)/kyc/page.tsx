@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { DocumentUpload } from '@/components/features/kyc/DocumentUpload';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { KycVerification } from '@/types/kyc.types';
 
 export default function KycPage() {
@@ -116,125 +118,144 @@ export default function KycPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'verified':
-        return 'text-green-600 dark:text-green-400';
+        return 'text-green-400';
       case 'pending':
-        return 'text-yellow-600 dark:text-yellow-400';
+        return 'text-yellow-400';
       case 'rejected':
-        return 'text-red-600 dark:text-red-400';
+        return 'text-red-400';
       default:
-        return 'text-muted-foreground';
+        return 'text-zinc-400';
     }
   };
 
   if (isLoading || status === 'loading') {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-muted-foreground">Chargement...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-zinc-400">Chargement...</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-2xl">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Vérification d'identité (KYC)</h1>
-          <p className="text-muted-foreground mt-2">
-            Téléchargez une pièce d'identité valide pour vérifier votre identité
-          </p>
-        </div>
+    <div className="min-h-screen bg-black">
+      <div className="container mx-auto p-6 max-w-2xl">
+        <div className="space-y-8">
+          <div>
+            <p className="text-label mb-2">VÉRIFICATION</p>
+            <h1 className="text-heading-2 mb-2">Vérification d'identité (KYC)</h1>
+            <p className="text-white/90">
+              Télécharge une pièce d'identité valide pour vérifier ton identité
+            </p>
+          </div>
 
-        {/* Statut actuel */}
-        {kycStatus && (
-          <div className="rounded-lg border p-6">
-            <h2 className="text-xl font-semibold mb-4">Statut de vérification</h2>
-            <div className="space-y-2">
-              <p>
-                <span className="font-medium">Statut:</span>{' '}
-                <span className={getStatusColor(kycStatus.status)}>
-                  {getStatusLabel(kycStatus.status)}
-                </span>
-              </p>
-              {kycStatus.verifiedAt && (
-                <p className="text-sm text-muted-foreground">
-                  Vérifié le:{' '}
-                  {new Date(kycStatus.verifiedAt).toLocaleDateString('fr-FR')}
-                </p>
-              )}
-              {kycStatus.rejectedAt && (
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">
-                    Rejeté le:{' '}
-                    {new Date(kycStatus.rejectedAt).toLocaleDateString('fr-FR')}
+          {/* Statut actuel */}
+          {kycStatus && (
+            <Card variant="v1-default">
+              <CardHeader>
+                <CardTitle className="text-white">Statut de vérification</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p className="text-white/90">
+                    <span className="font-medium text-white">Statut:</span>{' '}
+                    <span className={getStatusColor(kycStatus.status)}>
+                      {getStatusLabel(kycStatus.status)}
+                    </span>
                   </p>
-                  {kycStatus.rejectionReason && (
-                    <p className="text-sm text-destructive">
-                      Raison: {kycStatus.rejectionReason}
+                  {kycStatus.verifiedAt && (
+                    <p className="text-sm text-zinc-400">
+                      Vérifié le:{' '}
+                      {new Date(kycStatus.verifiedAt).toLocaleDateString('fr-FR')}
                     </p>
                   )}
+                  {kycStatus.rejectedAt && (
+                    <div className="space-y-1">
+                      <p className="text-sm text-zinc-400">
+                        Rejeté le:{' '}
+                        {new Date(kycStatus.rejectedAt).toLocaleDateString('fr-FR')}
+                      </p>
+                      {kycStatus.rejectionReason && (
+                        <p className="text-sm text-red-400">
+                          Raison: {kycStatus.rejectionReason}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
-        )}
+              </CardContent>
+            </Card>
+          )}
 
-        {success && (
-          <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-3 text-sm text-green-800 dark:text-green-200">
-            Votre document a été soumis avec succès. La vérification est en cours.
-          </div>
-        )}
+          {success && (
+            <Alert variant="default" className="bg-green-500/20 border-green-500/30">
+              <AlertDescription className="text-green-300">
+                Ton document a été soumis avec succès. La vérification est en cours.
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {/* Formulaire d'upload */}
-        {(!kycStatus || kycStatus.status === 'rejected') && (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {errors.general && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                {errors.general}
-              </div>
-            )}
+          {/* Formulaire d'upload */}
+          {(!kycStatus || kycStatus.status === 'rejected') && (
+            <Card variant="v1-default">
+              <CardHeader>
+                <CardTitle className="text-white">Soumettre un document</CardTitle>
+                <CardDescription className="text-zinc-400">
+                  Télécharge une pièce d'identité valide
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {errors.general && (
+                    <Alert variant="destructive">
+                      <AlertDescription>{errors.general}</AlertDescription>
+                    </Alert>
+                  )}
 
-            <DocumentUpload
-              onDocumentChange={setDocumentFile}
-              error={errors.document}
-            />
+                  <DocumentUpload
+                    onDocumentChange={setDocumentFile}
+                    error={errors.document}
+                  />
 
-            <div className="rounded-lg border p-4 bg-muted/50">
-              <h3 className="font-semibold mb-2">Documents acceptés</h3>
-              <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                <li>Passeport</li>
-                <li>Carte d'identité</li>
-                <li>Permis de conduire</li>
-              </ul>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Le document doit être clair, lisible et à jour. Les copies
-                scannées ou photos de bonne qualité sont acceptées.
-              </p>
-            </div>
+                  <Card variant="v1-overlay" className="p-4">
+                    <h3 className="font-semibold text-white mb-2">Documents acceptés</h3>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-zinc-400">
+                      <li>Passeport</li>
+                      <li>Carte d'identité</li>
+                      <li>Permis de conduire</li>
+                    </ul>
+                    <p className="mt-2 text-xs text-zinc-500">
+                      Le document doit être clair, lisible et à jour. Les copies
+                      scannées ou photos de bonne qualité sont acceptées.
+                    </p>
+                  </Card>
 
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isSubmitting || !documentFile}>
-                {isSubmitting ? 'Soumission...' : 'Soumettre pour vérification'}
-              </Button>
-            </div>
-          </form>
-        )}
+                  <div className="flex justify-end">
+                    <Button type="submit" variant="v1-primary" disabled={isSubmitting || !documentFile}>
+                      {isSubmitting ? 'Soumission...' : 'Soumettre pour vérification'}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
 
-        {kycStatus?.status === 'pending' && (
-          <div className="rounded-lg border p-6 bg-yellow-50 dark:bg-yellow-900/20">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200">
-              Votre vérification est en cours. Vous recevrez une notification
-              une fois la vérification terminée.
-            </p>
-          </div>
-        )}
+          {kycStatus?.status === 'pending' && (
+            <Alert variant="default" className="bg-yellow-500/20 border-yellow-500/30">
+              <AlertDescription className="text-yellow-300">
+                Ta vérification est en cours. Tu recevras une notification
+                une fois la vérification terminée.
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {kycStatus?.status === 'verified' && (
-          <div className="rounded-lg border p-6 bg-green-50 dark:bg-green-900/20">
-            <p className="text-sm text-green-800 dark:text-green-200">
-              ✓ Votre identité a été vérifiée avec succès.
-            </p>
-          </div>
-        )}
+          {kycStatus?.status === 'verified' && (
+            <Alert variant="default" className="bg-green-500/20 border-green-500/30">
+              <AlertDescription className="text-green-300">
+                ✓ Ton identité a été vérifiée avec succès.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
       </div>
     </div>
   );

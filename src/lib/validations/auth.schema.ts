@@ -13,7 +13,7 @@ export const registerSchema = z
       .regex(/[a-z]/, 'Le mot de passe doit contenir au moins une minuscule')
       .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre'),
     confirmPassword: z.string(),
-    userType: z.enum(['tenant', 'host'], {
+    userType: z.enum(['tenant', 'host', 'support'], {
       message: "Type d'utilisateur invalide",
     }),
   })

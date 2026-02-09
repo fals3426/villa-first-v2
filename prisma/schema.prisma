@@ -1,11 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "binary"
 }
 
@@ -13,57 +7,84 @@ datasource db {
   provider = "postgresql"
 }
 
-enum UserType {
-  tenant
-  host
-}
-
-enum KycStatus {
-  pending
-  verified
-  rejected
-}
-
 model User {
-  id                  String           @id @default(cuid())
-  email               String           @unique
-  password            String
-  userType            UserType
-  firstName           String?
-  lastName            String?
-  phone               String?
-  profilePictureUrl    String?
-  vibesPreferences    Json?
-  onboardingCompleted Boolean          @default(false)
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  kycVerification     KycVerification?
+  id                      String                   @id @default(cuid())
+  email                   String                   @unique
+  password                String
+  userType                UserType
+  firstName               String?
+  lastName                String?
+  phone                   String?
+  profilePictureUrl       String?
+  vibesPreferences        Json?
+  onboardingCompleted     Boolean                  @default(false)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  bookings                Booking[]
+  chatsAsHost             Chat[]                   @relation("ChatHost")
+  chatsAsTenant           Chat[]                   @relation("ChatTenant")
+  kycVerification         KycVerification?
+  listings                Listing[]
+  messages                Message[]
+  notificationPreferences NotificationPreferences?
+  pushSubscriptions       PushSubscription[]
+  verificationRequests    VerificationRequest[]
+  watchedListings         WatchedListing[]
 
   @@map("users")
+}
+
+/// Demande de vérification d'annonce hôte
+model VerificationRequest {
+  id        String                 @id @default(cuid())
+  hostId    String
+  listingId String
+  status    VerificationStatus     @default(pending)
+  reason    String?
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  documents VerificationDocument[]
+  host      User                   @relation(fields: [hostId], references: [id])
+  listing   Listing                @relation(fields: [listingId], references: [id])
+
+  @@index([hostId])
+  @@index([listingId])
+  @@index([status])
+  @@map("verification_requests")
+}
+
+/// Documents associés à une demande de vérification (titres, mandats, etc.)
+model VerificationDocument {
+  id                    String              @id @default(cuid())
+  verificationRequestId String
+  storageUrl            String
+  fileType              String
+  fileSize              Int
+  originalFileName      String
+  createdAt             DateTime            @default(now())
+  verificationRequest   VerificationRequest @relation(fields: [verificationRequestId], references: [id], onDelete: Cascade)
+
+  @@index([verificationRequestId])
+  @@map("verification_documents")
 }
 
 model KycVerification {
   id                  String    @id @default(cuid())
   userId              String    @unique
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   documentUrl         String
   status              KycStatus @default(pending)
-  provider            String    // 'stripe', 'onfido', 'sumsub', 'mock'
+  provider            String
   providerId          String?
-  
-  // Données vérifiées (chiffrées)
   verifiedName        String?
   verifiedDateOfBirth DateTime?
   verifiedNationality String?
-  
-  // Gestion conservation (RGPD)
-  retentionUntil     DateTime? // Date de suppression automatique
-  
+  retentionUntil      DateTime?
   verifiedAt          DateTime?
   rejectedAt          DateTime?
   rejectionReason     String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("kyc_verifications")
 }
@@ -71,8 +92,8 @@ model KycVerification {
 model AuditLog {
   id         String   @id @default(cuid())
   userId     String?
-  action     String   // 'kyc_verified', 'kyc_rejected', 'kyc_deleted', etc.
-  entityType String   // 'kyc', 'user', etc.
+  action     String
+  entityType String
   entityId   String?
   details    Json?
   ipAddress  String?
@@ -83,4 +104,345 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+/// Chat masqué entre locataire et hôte (Story 6.1, 6.2)
+model Chat {
+  id        String    @id @default(cuid())
+  listingId String
+  tenantId  String
+  hostId    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  host      User      @relation("ChatHost", fields: [hostId], references: [id], onDelete: Cascade)
+  listing   Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  tenant    User      @relation("ChatTenant", fields: [tenantId], references: [id], onDelete: Cascade)
+  messages  Message[]
+
+  @@unique([listingId, tenantId, hostId])
+  @@index([listingId])
+  @@index([tenantId])
+  @@index([hostId])
+  @@index([updatedAt])
+  @@map("chats")
+}
+
+/// Message dans un chat masqué (Story 6.1, 6.2)
+model Message {
+  id        String   @id @default(cuid())
+  chatId    String
+  senderId  String
+  content   String
+  createdAt DateTime @default(now())
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([chatId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+/// Préférences de notifications utilisateur (Story 6.6)
+model NotificationPreferences {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  pushEnabled           Boolean  @default(false)
+  emailEnabled          Boolean  @default(false)
+  smsEnabled            Boolean  @default(false)
+  notifyNewBooking      Boolean  @default(true)
+  notifyNewMessage      Boolean  @default(true)
+  notifyValidation      Boolean  @default(true)
+  notifyCheckInIssue    Boolean  @default(true)
+  notifyMatchingListing Boolean  @default(true)
+  notifyPlaceAvailable  Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+/// Subscription push pour notifications (Story 6.3)
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String
+  keys      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, endpoint])
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+/// Annonces suivies par un utilisateur (Story 6.8)
+model WatchedListing {
+  id         String    @id @default(cuid())
+  userId     String
+  listingId  String
+  createdAt  DateTime  @default(now())
+  notifiedAt DateTime?
+  listing    Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@index([listingId])
+  @@map("watched_listings")
+}
+
+/// Annonce de colocation
+model Listing {
+  id                   String                @id @default(cuid())
+  hostId               String
+  title                String
+  description          String
+  address              String
+  location             String?
+  latitude             Float?
+  longitude            Float?
+  capacity             Int
+  listingType          ListingType
+  status               ListingStatus         @default(draft)
+  pricePerPlace        Float?
+  rules                Json?
+  charter              String?
+  completenessScore    Int?                  @default(0)
+  videoUrl             String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  validationRule       ValidationRule?
+  validationThreshold  Int?
+  availability         AvailabilitySlot[]
+  bookings             Booking[]
+  chats                Chat[]
+  checkInInstruction   CheckInInstruction?
+  photos               ListingPhoto[]
+  host                 User                  @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  verificationRequests VerificationRequest[]
+  watchedBy            WatchedListing[]
+
+  @@index([hostId])
+  @@index([status])
+  @@index([location])
+  @@index([pricePerPlace])
+  @@index([latitude, longitude])
+  @@map("listings")
+}
+
+/// Photo d'annonce par catégorie
+model ListingPhoto {
+  id          String        @id @default(cuid())
+  listingId   String
+  category    PhotoCategory
+  url         String
+  originalUrl String?
+  position    Int           @default(0)
+  createdAt   DateTime      @default(now())
+  listing     Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@index([listingId, category])
+  @@map("listing_photos")
+}
+
+/// Créneaux de disponibilité pour une annonce
+model AvailabilitySlot {
+  id          String   @id @default(cuid())
+  listingId   String
+  startDate   DateTime
+  endDate     DateTime
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId])
+  @@index([listingId, startDate, endDate])
+  @@map("availability_slots")
+}
+
+/// Réservation d'une colocation
+model Booking {
+  id                  String        @id @default(cuid())
+  listingId           String
+  tenantId            String
+  checkIn             DateTime
+  checkOut            DateTime
+  status              BookingStatus @default(pending)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  currentListingPrice Int?
+  priceAtBooking      Int?
+  rejectionReason     String?
+  listing             Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  tenant              User          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  checkIns            CheckIn[]
+  incidents           Incident[]
+  payments            Payment[]
+
+  @@index([listingId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([checkIn, checkOut])
+  @@map("bookings")
+}
+
+/// Preuve de check-in avec photo et GPS (Story 8.1, 8.2, 8.3)
+model CheckIn {
+  id                  String   @id @default(cuid())
+  bookingId           String
+  photoUrl            String
+  latitude            Float?
+  longitude           Float?
+  distanceFromListing Float?
+  createdAt           DateTime @default(now())
+  booking             Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([createdAt])
+  @@map("check_ins")
+}
+
+model Incident {
+  id             String         @id @default(cuid())
+  bookingId      String
+  type           IncidentType
+  description    String
+  photos         Json?
+  status         IncidentStatus @default(reported)
+  resolvedAt     DateTime?
+  resolvedBy     String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
+  isUrgent       Boolean        @default(true)
+  booking        Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([status])
+  @@index([isUrgent, createdAt])
+  @@index([createdAt])
+  @@map("incidents")
+}
+
+/// Instructions de check-in pour une annonce (Story 8.4)
+model CheckInInstruction {
+  id           String   @id @default(cuid())
+  listingId    String   @unique
+  address      String
+  accessCodes  Json?
+  hostPhone    String?
+  hostEmail    String?
+  instructions String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("check_in_instructions")
+}
+
+/// Paiement/Préautorisation pour une réservation (Story 5.3)
+model Payment {
+  id                    String        @id @default(cuid())
+  bookingId             String
+  amount                Int
+  stripePaymentIntentId String        @unique
+  status                PaymentStatus @default(pending)
+  expiresAt             DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  booking               Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([status])
+  @@index([stripePaymentIntentId])
+  @@index([expiresAt])
+  @@map("payments")
+}
+
+enum UserType {
+  tenant
+  host
+  support
+}
+
+enum KycStatus {
+  pending
+  verified
+  rejected
+}
+
+enum VerificationStatus {
+  pending
+  in_review
+  approved
+  rejected
+  suspended
+  revoked
+}
+
+enum ListingStatus {
+  draft
+  published
+  suspended
+}
+
+enum ListingType {
+  VILLA
+  ROOM
+  SHARED_ROOM
+}
+
+enum PhotoCategory {
+  KITCHEN
+  BEDROOM
+  BATHROOM
+  OUTDOOR
+  OTHER
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  expired
+  cancelled
+  price_changed
+  accepted
+  rejected
+  incident_reported
+}
+
+enum PaymentStatus {
+  pending
+  captured
+  expired
+  cancelled
+  failed
+  refunded
+}
+
+enum ValidationRule {
+  FULL_ONLY
+  PARTIAL
+  MANUAL
+}
+
+/// Incident signalé lors du check-in (Story 8.5)
+enum IncidentType {
+  CODE_NOT_WORKING
+  PLACE_DIFFERENT
+  ACCESS_ISSUE
+  OTHER
+}
+
+enum IncidentStatus {
+  reported
+  in_progress
+  resolved
+  closed
 }

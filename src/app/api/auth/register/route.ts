@@ -37,6 +37,11 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error('Registration error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined,
+    });
 
     // Gérer erreurs spécifiques
     if (error instanceof Error && error.message === 'EMAIL_ALREADY_EXISTS') {
@@ -51,11 +56,48 @@ export async function POST(request: Request) {
       );
     }
 
+    // Gérer erreurs Prisma
+    if (error instanceof Error) {
+      // Erreur de connexion DB
+      if (
+        error.message.includes('timeout') ||
+        error.message.includes('Connection') ||
+        error.message.includes('ECONNREFUSED') ||
+        error.message.includes('P1001')
+      ) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'DATABASE_ERROR',
+              message: 'Erreur de connexion à la base de données. Veuillez réessayer.',
+            },
+          },
+          { status: 503 }
+        );
+      }
+
+      // Erreur de contrainte unique (email déjà utilisé)
+      if (error.message.includes('Unique constraint') || error.message.includes('P2002')) {
+        return NextResponse.json(
+          {
+            error: {
+              code: 'EMAIL_ALREADY_EXISTS',
+              message: 'Cet email est déjà utilisé',
+            },
+          },
+          { status: 409 }
+        );
+      }
+    }
+
     return NextResponse.json(
       {
         error: {
           code: 'INTERNAL_ERROR',
           message: 'Une erreur est survenue lors de la création du compte',
+          details: process.env.NODE_ENV === 'development' 
+            ? (error instanceof Error ? error.message : String(error))
+            : undefined,
         },
       },
       { status: 500 }

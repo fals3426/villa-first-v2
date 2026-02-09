@@ -1,6 +1,8 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
 
 export default async function HostDashboardPage() {
   const session = await getServerSession(authOptions);
@@ -15,35 +17,75 @@ export default async function HostDashboardPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard Hôte</h1>
-          <p className="text-muted-foreground mt-2">
-            Bienvenue, {session.user.email}
-          </p>
-        </div>
-
-        <div className="rounded-lg border p-6">
-          <h2 className="text-xl font-semibold mb-4">Vos informations</h2>
-          <div className="space-y-2">
-            <p>
-              <span className="font-medium">Email:</span> {session.user.email}
-            </p>
-            <p>
-              <span className="font-medium">Type:</span> Hôte / Propriétaire
+    <div className="min-h-screen bg-black">
+      <div className="container mx-auto p-6">
+        <div className="space-y-8">
+          <div>
+            <p className="text-label mb-2">TABLEAU DE BORD</p>
+            <h1 className="text-heading-2 mb-2">Dashboard Hôte</h1>
+            <p className="text-white/90">
+              Bienvenue, {session.user.email}
             </p>
           </div>
-        </div>
 
-        <div className="rounded-lg border p-6">
-          <h2 className="text-xl font-semibold mb-4">Fonctionnalités à venir</h2>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Créer une annonce</li>
-            <li>Gérer mes annonces</li>
-            <li>Demandes de réservation</li>
-            <li>Vérification et badge</li>
-          </ul>
+          {/* Actions rapides */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Link href="/host/listings/new">
+              <Card variant="v1-default" interactive className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-white">Créer une annonce</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-zinc-400">
+                    Publie ta coloc sur la plateforme
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/host/bookings">
+              <Card variant="v1-default" interactive className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-white">Demandes de réservation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-zinc-400">
+                    Gère les demandes de réservation reçues
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/profile">
+              <Card variant="v1-default" interactive className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-white">Mon profil</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-zinc-400">
+                    Modifie tes informations et préférences
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+
+          {/* Informations utilisateur */}
+          <Card variant="v1-default">
+            <CardHeader>
+              <CardTitle className="text-white">Tes informations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <p className="text-white/90">
+                  <span className="font-medium text-white">Email:</span> {session.user.email}
+                </p>
+                <p className="text-white/90">
+                  <span className="font-medium text-white">Type:</span> Hôte / Propriétaire
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

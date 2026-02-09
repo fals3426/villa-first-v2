@@ -41,7 +41,7 @@ story_location: {project-root}/_bmad-output/implementation-artifacts
 
 development_status:
   # Epic 1: Authentification & Profils Utilisateurs
-  epic-1: in-progress
+  epic-1: done
   1-1-initialisation-du-projet-next-js: done
   1-2-creation-de-compte-utilisateur: done
   1-3-authentification-email-mot-de-passe: done
@@ -52,88 +52,88 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Vérification Hôte & Système de Confiance
-  epic-2: backlog
-  2-1-upload-documents-titre-de-propriete-ou-mandat-par-hote: backlog
-  2-2-affichage-badge-annonce-verifiee-pour-annonces-verifiees: backlog
-  2-3-interface-support-pour-verification-manuelle-titres-mandats: backlog
-  2-4-approbation-rejet-demande-de-verification-par-support: backlog
-  2-5-suspension-revocation-badge-verifie-en-cas-de-fraude: backlog
-  2-6-differenciation-visuelle-annonces-verifiees-vs-non-verifiees: backlog
+  epic-2: done
+  2-1-upload-documents-titre-de-propriete-ou-mandat-par-hote: done
+  2-2-affichage-badge-annonce-verifiee-pour-annonces-verifiees: done
+  2-3-interface-support-pour-verification-manuelle-titres-mandats: done
+  2-4-approbation-rejet-demande-de-verification-par-support: done
+  2-5-suspension-revocation-badge-verifie-en-cas-de-fraude: done
+  2-6-differenciation-visuelle-annonces-verifiees-vs-non-verifiees: done
   epic-2-retrospective: optional
 
   # Epic 3: Création & Gestion d'Annonces
-  epic-3: backlog
-  3-1-creation-d-annonce-de-coloc-par-hote: backlog
-  3-2-upload-photos-par-categorie-pour-annonce: backlog
-  3-3-upload-video-optionnelle-pour-annonce: backlog
-  3-4-calcul-score-de-completude-d-annonce: backlog
-  3-5-blocage-publication-si-score-completude-insuffisant: backlog
-  3-6-definition-regles-et-charte-de-la-coloc: backlog
-  3-7-gestion-disponibilite-via-calendrier-interne: backlog
-  3-8-synchronisation-automatique-calendrier-rafraichissement-30-min: backlog
-  3-9-definition-et-modification-des-prix: backlog
+  epic-3: done
+  3-1-creation-d-annonce-de-coloc-par-hote: done
+  3-2-upload-photos-par-categorie-pour-annonce: done
+  3-3-upload-video-optionnelle-pour-annonce: done
+  3-4-calcul-score-de-completude-d-annonce: done
+  3-5-blocage-publication-si-score-completude-insuffisant: done
+  3-6-definition-regles-et-charte-de-la-coloc: done
+  3-7-gestion-disponibilite-via-calendrier-interne: done
+  3-8-synchronisation-automatique-calendrier-rafraichissement-30-min: done
+  3-9-definition-et-modification-des-prix: done
   epic-3-retrospective: optional
 
   # Epic 4: Recherche & Découverte de Colocations
-  epic-4: backlog
-  4-1-recherche-de-colocations-par-localisation: backlog
-  4-2-filtrage-des-annonces-par-budget: backlog
-  4-3-filtrage-des-annonces-par-vibes: backlog
-  4-4-affichage-carte-de-confiance-avec-geolocalisation: backlog
-  4-5-affichage-annonces-correspondant-aux-criteres-de-recherche: backlog
-  4-6-comparaison-de-plusieurs-annonces: backlog
+  epic-4: done
+  4-1-recherche-de-colocations-par-localisation: done
+  4-2-filtrage-des-annonces-par-budget: done
+  4-3-filtrage-des-annonces-par-vibes: done
+  4-4-affichage-carte-de-confiance-avec-geolocalisation: done
+  4-5-affichage-annonces-correspondant-aux-criteres-de-recherche: done
+  4-6-comparaison-de-plusieurs-annonces: done
   epic-4-retrospective: optional
 
   # Epic 5: Réservation & Paiement avec Validation Propriétaire
-  epic-5: backlog
-  5-1-reservation-d-une-coloc-disponible: backlog
-  5-2-blocage-reservation-si-prix-modifie-sans-revalidation: backlog
-  5-3-preautorisation-25-pour-reserver-une-place: backlog
-  5-4-preautorisation-sans-debit-tant-que-colocation-non-validee: backlog
-  5-5-definition-regles-de-validation-par-proprietaire: backlog
-  5-6-validation-manuelle-colocation-par-proprietaire: backlog
-  5-7-capture-preautorisations-lors-validation-colocation: backlog
-  5-8-expiration-automatique-preautorisations-si-colocation-non-validee: backlog
-  5-9-visualisation-reservations-confirmees: backlog
-  5-10-gestion-paiements-en-mode-hors-ligne-post-confirmation: backlog
+  epic-5: done
+  5-1-reservation-d-une-coloc-disponible: done
+  5-2-blocage-reservation-si-prix-modifie-sans-revalidation: done
+  5-3-preautorisation-25-pour-reserver-une-place: done
+  5-4-preautorisation-sans-debit-tant-que-colocation-non-validee: done
+  5-5-definition-regles-de-validation-par-proprietaire: done
+  5-6-validation-manuelle-colocation-par-proprietaire: done
+  5-7-capture-preautorisations-lors-validation-colocation: done
+  5-8-expiration-automatique-preautorisations-si-colocation-non-validee: done
+  5-9-visualisation-reservations-confirmees: done
+  5-10-gestion-paiements-en-mode-hors-ligne-post-confirmation: done
   epic-5-retrospective: optional
 
   # Epic 6: Communication & Notifications
-  epic-6: backlog
-  6-1-communication-via-chat-masque: backlog
-  6-2-centralisation-echanges-dans-chat-masque: backlog
-  6-3-notifications-push-sur-mobile: backlog
-  6-4-notifications-email-optionnelles: backlog
-  6-5-notifications-sms-optionnelles: backlog
-  6-6-configuration-preferences-de-notifications: backlog
-  6-7-notifications-quand-annonce-correspond-aux-criteres: backlog
-  6-8-notifications-quand-place-se-libere-dans-coloc-suivie: backlog
+  epic-6: done
+  6-1-communication-via-chat-masque: done
+  6-2-centralisation-echanges-dans-chat-masque: done
+  6-3-notifications-push-sur-mobile: done
+  6-4-notifications-email-optionnelles: done
+  6-5-notifications-sms-optionnelles: done
+  6-6-configuration-preferences-de-notifications: done
+  6-7-notifications-quand-annonce-correspond-aux-criteres: done
+  6-8-notifications-quand-place-se-libere-dans-coloc-suivie: done
   epic-6-retrospective: optional
 
   # Epic 7: Gestion des Demandes de Réservation
-  epic-7: backlog
-  7-1-visualisation-demandes-de-reservation-recues: backlog
-  7-2-acceptation-ou-refus-demande-de-reservation: backlog
+  epic-7: done
+  7-1-visualisation-demandes-de-reservation-recues: done
+  7-2-acceptation-ou-refus-demande-de-reservation: done
   epic-7-retrospective: optional
 
   # Epic 8: Check-in & Vérification d'Arrivée
-  epic-8: backlog
-  8-1-check-in-avec-photo-obligatoire: backlog
-  8-2-check-in-avec-geolocalisation-gps: backlog
-  8-3-stockage-preuves-de-check-in-photo-gps: backlog
-  8-4-acces-informations-check-in-hors-ligne: backlog
-  8-5-signalement-probleme-lors-du-check-in: backlog
+  epic-8: done
+  8-1-check-in-avec-photo-obligatoire: done
+  8-2-check-in-avec-geolocalisation-gps: done
+  8-3-stockage-preuves-de-check-in-photo-gps: done
+  8-4-acces-informations-check-in-hors-ligne: done
+  8-5-signalement-probleme-lors-du-check-in: done
   epic-8-retrospective: optional
 
   # Epic 9: Support & Opérations
-  epic-9: backlog
-  9-1-acces-back-office-de-gestion-pour-support: backlog
-  9-2-visualisation-incidents-de-check-in: backlog
-  9-3-gestion-incidents-via-mode-urgent-30-min: backlog
-  9-4-visualisation-dossiers-complets-kyc-chats-check-in-statut-calendrier: backlog
-  9-5-suspension-annonce-ou-badge-en-cas-de-fraude: backlog
-  9-6-remboursement-locataire: backlog
-  9-7-relogement-locataire-en-cas-d-incident: backlog
-  9-8-generation-alertes-pour-sync-calendrier-en-echec: backlog
-  9-9-tracage-historique-complet-logs-chats-signalements: backlog
+  epic-9: done
+  9-1-acces-back-office-de-gestion-pour-support: done
+  9-2-visualisation-incidents-de-check-in: done
+  9-3-gestion-incidents-via-mode-urgent-30-min: done
+  9-4-visualisation-dossiers-complets-kyc-chats-check-in-statut-calendrier: done
+  9-5-suspension-annonce-ou-badge-en-cas-de-fraude: done
+  9-6-remboursement-locataire: done
+  9-7-relogement-locataire-en-cas-d-incident: done
+  9-8-generation-alertes-pour-sync-calendrier-en-echec: done
+  9-9-tracage-historique-complet-logs-chats-signalements: done
   epic-9-retrospective: optional

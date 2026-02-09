@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ImageUpload } from '@/components/features/profile/ImageUpload';
 import { VibesQuestionnaire } from '@/components/features/onboarding/VibesQuestionnaire';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import type { VibesPreferences } from '@/types/vibes.types';
 import Link from 'next/link';
 import type { KycVerification } from '@/types/kyc.types';
@@ -203,34 +205,43 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-muted-foreground">Chargement...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-zinc-400">Chargement...</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-2xl">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Mon profil</h1>
-          <p className="text-muted-foreground mt-2">
-            Gérez vos informations personnelles
-          </p>
-        </div>
-
-        {success && (
-          <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-3 text-sm text-green-800 dark:text-green-200">
-            Votre profil a été mis à jour avec succès.
+    <div className="min-h-screen bg-black">
+      <div className="container mx-auto p-6 max-w-2xl">
+        <div className="space-y-8">
+          <div>
+            <p className="text-label mb-2">PROFIL</p>
+            <h1 className="text-heading-2 mb-2">Mon profil</h1>
+            <p className="text-white/90">
+              Gère tes informations personnelles
+            </p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {errors.general && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {errors.general}
-            </div>
+          {success && (
+            <Alert variant="default" className="bg-green-500/20 border-green-500/30">
+              <AlertDescription className="text-green-300">
+                Ton profil a été mis à jour avec succès.
+              </AlertDescription>
+            </Alert>
           )}
+
+          <Card variant="v1-default">
+            <CardHeader>
+              <CardTitle className="text-white">Informations personnelles</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {errors.general && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{errors.general}</AlertDescription>
+                  </Alert>
+                )}
 
           <ImageUpload
             currentImageUrl={profile?.profilePictureUrl || null}
@@ -247,78 +258,82 @@ export default function ProfilePage() {
               disabled
               className="bg-muted"
             />
-            <p className="text-xs text-muted-foreground">
-              L'email ne peut pas être modifié
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="firstName">Prénom</Label>
-            <Input
-              id="firstName"
-              name="firstName"
-              type="text"
-              placeholder="Votre prénom"
-              defaultValue={profile?.firstName || ''}
-              aria-invalid={!!errors.firstName}
-            />
-            {errors.firstName && (
-              <p className="text-sm text-destructive">{errors.firstName}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Nom</Label>
-            <Input
-              id="lastName"
-              name="lastName"
-              type="text"
-              placeholder="Votre nom"
-              defaultValue={profile?.lastName || ''}
-              aria-invalid={!!errors.lastName}
-            />
-            {errors.lastName && (
-              <p className="text-sm text-destructive">{errors.lastName}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Téléphone</Label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              placeholder="+33 6 12 34 56 78"
-              defaultValue={profile?.phone || ''}
-              aria-invalid={!!errors.phone}
-            />
-            {errors.phone && (
-              <p className="text-sm text-destructive">{errors.phone}</p>
-            )}
-          </div>
-
-          <div className="flex justify-end space-x-4">
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
-            </Button>
-          </div>
-        </form>
-
-        {/* Section Préférences Vibes (uniquement pour les locataires) */}
-        {profile?.userType === 'tenant' && (
-          <div className="space-y-6 rounded-lg border p-6">
-            <div>
-              <h2 className="text-2xl font-bold">Préférences Vibes</h2>
-              <p className="text-muted-foreground mt-2">
-                Modifiez vos préférences pour trouver des colocations qui vous correspondent
-              </p>
-            </div>
-
-            {vibesSuccess && (
-              <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-3 text-sm text-green-800 dark:text-green-200">
-                Vos préférences vibes ont été mises à jour avec succès.
+                <p className="text-xs text-zinc-500">
+                  L'email ne peut pas être modifié
+                </p>
               </div>
-            )}
+
+              <div className="space-y-2">
+                <Label htmlFor="firstName">Prénom</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="Ton prénom"
+                  defaultValue={profile?.firstName || ''}
+                  aria-invalid={!!errors.firstName}
+                />
+                {errors.firstName && (
+                  <p className="text-sm text-red-400">{errors.firstName}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Nom</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Ton nom"
+                  defaultValue={profile?.lastName || ''}
+                  aria-invalid={!!errors.lastName}
+                />
+                {errors.lastName && (
+                  <p className="text-sm text-red-400">{errors.lastName}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Téléphone</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="+33 6 12 34 56 78"
+                  defaultValue={profile?.phone || ''}
+                  aria-invalid={!!errors.phone}
+                />
+                {errors.phone && (
+                  <p className="text-sm text-red-400">{errors.phone}</p>
+                )}
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <Button type="submit" variant="v1-primary" disabled={isSaving}>
+                  {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                </Button>
+              </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Section Préférences Vibes (uniquement pour les locataires) */}
+          {profile?.userType === 'tenant' && (
+            <Card variant="v1-default">
+              <CardHeader>
+                <CardTitle className="text-white">Préférences Vibes</CardTitle>
+                <CardDescription className="text-zinc-400">
+                  Modifie tes préférences pour trouver des colocs qui te correspondent
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {vibesSuccess && (
+                  <Alert variant="default" className="bg-green-500/20 border-green-500/30 mb-6">
+                    <AlertDescription className="text-green-300">
+                      Tes préférences vibes ont été mises à jour avec succès.
+                    </AlertDescription>
+                  </Alert>
+                )}
 
             <VibesQuestionnaire
               initialValues={profile.vibesPreferences || {}}
@@ -350,20 +365,22 @@ export default function ProfilePage() {
                 } finally {
                   setIsSavingVibes(false);
                 }
-              }}
-              isEditing={true}
-            />
-          </div>
-        )}
+                }}
+                isEditing={true}
+              />
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Section KYC */}
-        <div className="space-y-6 rounded-lg border p-6">
-          <div>
-            <h2 className="text-2xl font-bold">Vérification d'identité (KYC)</h2>
-            <p className="text-muted-foreground mt-2">
-              Vérifiez votre identité pour accéder à toutes les fonctionnalités
-            </p>
-          </div>
+          {/* Section KYC */}
+          <Card variant="v1-default">
+            <CardHeader>
+              <CardTitle className="text-white">Vérification d'identité (KYC)</CardTitle>
+              <CardDescription className="text-zinc-400">
+                Vérifie ton identité pour accéder à toutes les fonctionnalités
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
 
           {kycStatus ? (
             <div className="space-y-4">
@@ -386,77 +403,85 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              {/* Données vérifiées */}
-              {kycStatus.status === 'verified' && verifiedData && (
-                <div className="space-y-3 rounded-lg border p-4 bg-muted/50">
-                  <h3 className="font-semibold">Données vérifiées</h3>
-                  <div className="space-y-2 text-sm">
-                    <p>
-                      <span className="font-medium">Nom:</span> {verifiedData.name}
-                    </p>
-                    {verifiedData.dateOfBirth && (
-                      <p>
-                        <span className="font-medium">Date de naissance:</span>{' '}
-                        {verifiedData.dateOfBirth.toLocaleDateString('fr-FR')}
-                      </p>
-                    )}
-                    {verifiedData.nationality && (
-                      <p>
-                        <span className="font-medium">Nationalité:</span>{' '}
-                        {verifiedData.nationality}
-                      </p>
-                    )}
-                    {verifiedData.verifiedAt && (
-                      <p className="text-xs text-muted-foreground">
-                        Vérifié le:{' '}
-                        {verifiedData.verifiedAt.toLocaleDateString('fr-FR')}
-                      </p>
-                    )}
-                    {verifiedData.retentionUntil && (
-                      <p className="text-xs text-muted-foreground">
-                        Conservation jusqu'au:{' '}
-                        {verifiedData.retentionUntil.toLocaleDateString('fr-FR')} (RGPD)
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {kycStatus.rejectionReason && (
-                <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                  Raison du rejet: {kycStatus.rejectionReason}
-                </div>
-              )}
-
-              <div className="flex flex-wrap gap-2">
-                {kycStatus.status === 'rejected' && (
-                  <Link href="/kyc">
-                    <Button variant="outline">Soumettre un nouveau document</Button>
-                  </Link>
+                {/* Données vérifiées */}
+                {kycStatus.status === 'verified' && verifiedData && (
+                  <Card variant="v1-overlay" className="mb-4">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg">Données vérifiées</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 text-sm">
+                        <p className="text-white/90">
+                          <span className="font-medium text-white">Nom:</span> {verifiedData.name}
+                        </p>
+                        {verifiedData.dateOfBirth && (
+                          <p className="text-white/90">
+                            <span className="font-medium text-white">Date de naissance:</span>{' '}
+                            {verifiedData.dateOfBirth.toLocaleDateString('fr-FR')}
+                          </p>
+                        )}
+                        {verifiedData.nationality && (
+                          <p className="text-white/90">
+                            <span className="font-medium text-white">Nationalité:</span>{' '}
+                            {verifiedData.nationality}
+                          </p>
+                        )}
+                        {verifiedData.verifiedAt && (
+                          <p className="text-xs text-zinc-500">
+                            Vérifié le:{' '}
+                            {verifiedData.verifiedAt.toLocaleDateString('fr-FR')}
+                          </p>
+                        )}
+                        {verifiedData.retentionUntil && (
+                          <p className="text-xs text-zinc-500">
+                            Conservation jusqu'au:{' '}
+                            {verifiedData.retentionUntil.toLocaleDateString('fr-FR')} (RGPD)
+                          </p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
-                {kycStatus.status === 'verified' && (
-                  <Button
-                    variant="destructive"
-                    onClick={handleDeleteKycData}
-                    disabled={isDeletingKyc}
-                  >
-                    {isDeletingKyc
-                      ? 'Suppression...'
-                      : 'Supprimer mes données KYC (RGPD)'}
-                  </Button>
+
+                {kycStatus.rejectionReason && (
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertDescription>
+                      Raison du rejet: {kycStatus.rejectionReason}
+                    </AlertDescription>
+                  </Alert>
                 )}
+
+                <div className="flex flex-wrap gap-2">
+                  {kycStatus.status === 'rejected' && (
+                    <Link href="/kyc">
+                      <Button variant="v1-outline">Soumettre un nouveau document</Button>
+                    </Link>
+                  )}
+                  {kycStatus.status === 'verified' && (
+                    <Button
+                      variant="destructive"
+                      onClick={handleDeleteKycData}
+                      disabled={isDeletingKyc}
+                    >
+                      {isDeletingKyc
+                        ? 'Suppression...'
+                        : 'Supprimer mes données KYC (RGPD)'}
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <p className="text-muted-foreground">
-                Vous n'avez pas encore soumis de document pour la vérification.
-              </p>
-              <Link href="/kyc">
-                <Button>Commencer la vérification</Button>
-              </Link>
-            </div>
-          )}
+            ) : (
+              <div className="space-y-4">
+                <p className="text-zinc-400">
+                  Tu n'as pas encore soumis de document pour la vérification.
+                </p>
+                <Link href="/kyc">
+                  <Button variant="v1-primary">Commencer la vérification</Button>
+                </Link>
+              </div>
+            )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
