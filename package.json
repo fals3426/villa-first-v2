@@ -6,7 +6,7 @@
     "postinstall": "prisma generate",
     "dev": "next dev --webpack -H 0.0.0.0",
     "dev:local": "next dev --webpack",
-    "build": "prisma migrate deploy && next build --webpack",
+    "build": "node scripts/resolve-failed-migration.js && prisma migrate deploy && next build --webpack",
     "analyze": "cross-env ANALYZE=true next build --webpack",
     "start": "next start",
     "lint": "eslint",
