@@ -36,11 +36,17 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Registration error:', error);
-    console.error('Error details:', {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined,
+    // Logs détaillés pour le diagnostic
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    const errorName = error instanceof Error ? error.name : undefined;
+    
+    console.error('[REGISTER API] Registration error:', {
+      message: errorMessage,
+      name: errorName,
+      stack: errorStack,
+      // Log l'erreur complète pour Vercel
+      fullError: error,
     });
 
     // Gérer erreurs spécifiques

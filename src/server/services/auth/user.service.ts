@@ -5,7 +5,7 @@ import { hash } from 'bcryptjs';
 async function retryWithBackoff<T>(
   fn: () => Promise<T>,
   maxRetries = 3,
-  delay = 1000
+  delay = 500
 ): Promise<T> {
   let lastError: Error | null = null;
   
@@ -15,15 +15,22 @@ async function retryWithBackoff<T>(
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
       
-      // Si c'est une erreur de connexion, on retry
-      if (
+      // Vérifier si c'est une erreur Prisma de connexion fermée (P1017)
+      const isPrismaConnectionError = 
+        (error as any)?.code === 'P1017' ||
+        lastError.message.includes('Server has closed the connection') ||
         lastError.message.includes('Connection terminated') ||
         lastError.message.includes('Connection closed') ||
-        lastError.message.includes('ECONNREFUSED')
-      ) {
+        lastError.message.includes('ECONNREFUSED') ||
+        lastError.message.includes('P1001');
+      
+      // Si c'est une erreur de connexion, on retry
+      if (isPrismaConnectionError) {
         if (attempt < maxRetries - 1) {
           // Attendre avant de retry (backoff exponentiel)
-          await new Promise((resolve) => setTimeout(resolve, delay * Math.pow(2, attempt)));
+          const waitTime = delay * Math.pow(2, attempt);
+          console.warn(`[UserService] Connection error (attempt ${attempt + 1}/${maxRetries}), retrying in ${waitTime}ms...`);
+          await new Promise((resolve) => setTimeout(resolve, waitTime));
           continue;
         }
       }

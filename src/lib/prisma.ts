@@ -14,33 +14,49 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Nettoyer l'URL de connexion pour éviter les paramètres problématiques de Prisma Postgres
-// L'URL TCP de Prisma Postgres contient des paramètres comme connect_timeout=0 qui causent des problèmes
+// Configuration de l'URL de connexion
 const databaseUrl = process.env.DATABASE_URL || '';
-const cleanDatabaseUrl = databaseUrl.includes('?') 
-  ? databaseUrl.split('?')[0] + '?sslmode=disable'
-  : databaseUrl + '?sslmode=disable';
+
+// Pour Vercel Postgres et les environnements serverless, utiliser sslmode=require
+// Pour le développement local, utiliser sslmode=disable
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
+const sslMode = isProduction ? 'require' : 'disable';
+
+// Construire l'URL proprement
+let cleanDatabaseUrl = databaseUrl;
+if (databaseUrl.includes('?')) {
+  // Si l'URL contient déjà des paramètres, ajouter ou remplacer sslmode
+  const urlParts = databaseUrl.split('?');
+  const baseUrl = urlParts[0];
+  const existingParams = new URLSearchParams(urlParts[1] || '');
+  existingParams.set('sslmode', sslMode);
+  cleanDatabaseUrl = `${baseUrl}?${existingParams.toString()}`;
+} else {
+  cleanDatabaseUrl = `${databaseUrl}?sslmode=${sslMode}`;
+}
 
 // Log pour debug (masquer les credentials)
 if (process.env.NODE_ENV === 'development') {
   console.log('[Prisma] Database URL:', cleanDatabaseUrl.replace(/postgres:\/\/[^:]+:[^@]+@/, 'postgres://***:***@'));
 }
 
-// Créer le pool de connexions avec configuration optimisée
+// Créer le pool de connexions avec configuration optimisée pour serverless
 const pool =
   globalForPrisma.pool ??
   new Pool({
     connectionString: cleanDatabaseUrl,
-    max: 10, // Nombre maximum de connexions dans le pool
-    idleTimeoutMillis: 30000, // Fermer les connexions inactives après 30s
-    connectionTimeoutMillis: 20000, // Timeout de connexion de 20s (augmenté pour éviter les timeouts)
+    max: isProduction ? 1 : 10, // Sur Vercel/serverless, limiter à 1 connexion par instance
+    min: 0, // Permettre de fermer toutes les connexions quand inactif
+    idleTimeoutMillis: isProduction ? 10000 : 30000, // Plus court en production pour libérer rapidement
+    connectionTimeoutMillis: 10000, // Timeout de connexion de 10s
     // Gérer les erreurs de connexion
-    allowExitOnIdle: false,
+    allowExitOnIdle: true, // Permettre la fermeture des connexions inactives
     // Options supplémentaires pour la stabilité
     keepAlive: true,
-    keepAliveInitialDelayMillis: 10000,
-    // Désactiver single_use_connections pour réutiliser les connexions
-    statement_timeout: 30000, // Timeout pour les requêtes SQL (30s)
+    keepAliveInitialDelayMillis: 0, // Démarrer keep-alive immédiatement
+    // Timeouts
+    statement_timeout: 20000, // Timeout pour les requêtes SQL (20s)
+    query_timeout: 20000, // Timeout pour les requêtes (20s)
   });
 
 // Gérer les erreurs du pool - uniquement si c'est un nouveau pool
@@ -69,7 +85,23 @@ export const prisma =
   new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    // Configuration pour serverless/Vercel
+    datasources: {
+      db: {
+        url: cleanDatabaseUrl,
+      },
+    },
   });
+
+// Gérer les erreurs de connexion fermée et reconnecter automatiquement
+if (!globalForPrisma.prisma) {
+  // En production/serverless, reconnecter automatiquement si la connexion est fermée
+  prisma.$on('error' as never, (e: any) => {
+    if (e.code === 'P1017' || e.message?.includes('Server has closed the connection')) {
+      console.warn('[Prisma] Connection closed, will reconnect on next query');
+    }
+  });
+}
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
