@@ -3,32 +3,45 @@
  * Utilisé avant prisma migrate deploy pour débloquer les migrations
  */
 
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { Pool } = require('pg');
 
 async function resolveFailedMigration() {
+  let pool = null;
+  
   try {
+    // Vérifier que DATABASE_URL est définie
+    if (!process.env.DATABASE_URL) {
+      console.log('⚠️  DATABASE_URL non définie, skip de la résolution');
+      return;
+    }
+
     console.log('🔍 Vérification des migrations échouées...');
     
-    // Vérifier si la migration échouée existe dans _prisma_migrations
-    const failedMigration = await prisma.$queryRaw`
-      SELECT * FROM "_prisma_migrations" 
-      WHERE migration_name = '20260210000001_add_all_tables' 
-      AND finished_at IS NULL
-    `;
+    // Créer une connexion PostgreSQL directe
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.DATABASE_URL.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
+    });
     
-    if (failedMigration && failedMigration.length > 0) {
+    // Vérifier si la migration échouée existe dans _prisma_migrations
+    const result = await pool.query(`
+      SELECT * FROM "_prisma_migrations" 
+      WHERE migration_name = $1 
+      AND finished_at IS NULL
+    `, ['20260210000001_add_all_tables']);
+    
+    if (result.rows && result.rows.length > 0) {
       console.log('⚠️  Migration échouée trouvée, marquage comme résolue...');
       
       // Marquer la migration comme résolue (rolled back)
-      await prisma.$executeRaw`
+      await pool.query(`
         UPDATE "_prisma_migrations" 
         SET finished_at = NOW(), 
             rolled_back_at = NOW(),
             logs = 'Migration resolved manually - tables will be created in next migration'
-        WHERE migration_name = '20260210000001_add_all_tables' 
+        WHERE migration_name = $1 
         AND finished_at IS NULL
-      `;
+      `, ['20260210000001_add_all_tables']);
       
       console.log('✅ Migration échouée marquée comme résolue');
     } else {
@@ -43,7 +56,9 @@ async function resolveFailedMigration() {
       // Ne pas faire échouer le build si ça échoue
     }
   } finally {
-    await prisma.$disconnect();
+    if (pool) {
+      await pool.end();
+    }
   }
 }
 
