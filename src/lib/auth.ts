@@ -4,7 +4,6 @@ import { authService } from '@/server/services/auth/auth.service';
 import { onboardingService } from '@/server/services/user/onboarding.service';
 
 export const authOptions: NextAuthOptions = {
-  trustHost: true, // requis en dev (localhost) avec middleware
   providers: [
     CredentialsProvider({
       name: 'Credentials',
