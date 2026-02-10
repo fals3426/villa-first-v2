@@ -1,4 +1,8 @@
--- Mark the failed migration as resolved by creating tables in correct order
+-- Mark the failed migration as resolved
+-- First, mark the previous failed migration as rolled back so we can proceed
+DELETE FROM "_prisma_migrations" WHERE migration_name = '20260210000001_add_all_tables' AND finished_at IS NULL;
+
+-- Now create tables in correct order (respecting foreign key dependencies)
 -- First, create tables that don't depend on others (except users which already exists)
 
 -- Create listings first (depends on users)
