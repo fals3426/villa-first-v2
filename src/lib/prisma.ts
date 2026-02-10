@@ -85,12 +85,6 @@ export const prisma =
   new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    // Configuration pour serverless/Vercel
-    datasources: {
-      db: {
-        url: cleanDatabaseUrl,
-      },
-    },
   });
 
 // Gérer les erreurs de connexion fermée et reconnecter automatiquement
