@@ -1,23 +1,64 @@
 -- CreateEnum (only enums that don't exist yet)
-CREATE TYPE IF NOT EXISTS "KycStatus" AS ENUM ('pending', 'verified', 'rejected');
+-- PostgreSQL doesn't support CREATE TYPE IF NOT EXISTS, so we use DO blocks
+DO $$ BEGIN
+    CREATE TYPE "KycStatus" AS ENUM ('pending', 'verified', 'rejected');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "VerificationStatus" AS ENUM ('pending', 'in_review', 'approved', 'rejected', 'suspended', 'revoked');
+DO $$ BEGIN
+    CREATE TYPE "VerificationStatus" AS ENUM ('pending', 'in_review', 'approved', 'rejected', 'suspended', 'revoked');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "ListingStatus" AS ENUM ('draft', 'published', 'suspended');
+DO $$ BEGIN
+    CREATE TYPE "ListingStatus" AS ENUM ('draft', 'published', 'suspended');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "ListingType" AS ENUM ('VILLA', 'ROOM', 'SHARED_ROOM');
+DO $$ BEGIN
+    CREATE TYPE "ListingType" AS ENUM ('VILLA', 'ROOM', 'SHARED_ROOM');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "PhotoCategory" AS ENUM ('KITCHEN', 'BEDROOM', 'BATHROOM', 'OUTDOOR', 'OTHER');
+DO $$ BEGIN
+    CREATE TYPE "PhotoCategory" AS ENUM ('KITCHEN', 'BEDROOM', 'BATHROOM', 'OUTDOOR', 'OTHER');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "BookingStatus" AS ENUM ('pending', 'confirmed', 'expired', 'cancelled', 'price_changed', 'accepted', 'rejected', 'incident_reported');
+DO $$ BEGIN
+    CREATE TYPE "BookingStatus" AS ENUM ('pending', 'confirmed', 'expired', 'cancelled', 'price_changed', 'accepted', 'rejected', 'incident_reported');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "PaymentStatus" AS ENUM ('pending', 'captured', 'expired', 'cancelled', 'failed', 'refunded');
+DO $$ BEGIN
+    CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'captured', 'expired', 'cancelled', 'failed', 'refunded');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "ValidationRule" AS ENUM ('FULL_ONLY', 'PARTIAL', 'MANUAL');
+DO $$ BEGIN
+    CREATE TYPE "ValidationRule" AS ENUM ('FULL_ONLY', 'PARTIAL', 'MANUAL');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "IncidentType" AS ENUM ('CODE_NOT_WORKING', 'PLACE_DIFFERENT', 'ACCESS_ISSUE', 'OTHER');
+DO $$ BEGIN
+    CREATE TYPE "IncidentType" AS ENUM ('CODE_NOT_WORKING', 'PLACE_DIFFERENT', 'ACCESS_ISSUE', 'OTHER');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE IF NOT EXISTS "IncidentStatus" AS ENUM ('reported', 'in_progress', 'resolved', 'closed');
+DO $$ BEGIN
+    CREATE TYPE "IncidentStatus" AS ENUM ('reported', 'in_progress', 'resolved', 'closed');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateTable
 CREATE TABLE IF NOT EXISTS "verification_requests" (
