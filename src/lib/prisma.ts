@@ -85,6 +85,7 @@ export const prisma =
   new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    // Note: datasources config removed - not compatible with adapter pattern
   });
 
 // Gérer les erreurs de connexion fermée et reconnecter automatiquement
